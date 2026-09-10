@@ -3,6 +3,7 @@
 
 namespace portpad {
 Renderer::Renderer(const std::string& fontPath) {
+    editorFontPath_ = (std::filesystem::path(fontPath).parent_path() / "DejaVuSansMono.ttf").string();
     window_.reset(SDL_CreateWindow("PortPad", SDL_WINDOWPOS_CENTERED,
                                   SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_SHOWN));
     if (!window_) throw std::runtime_error(SDL_GetError());
@@ -27,6 +28,13 @@ void Renderer::text(const std::string& value, int x, int y, SDL_Color color) {
         throw std::runtime_error(SDL_GetError());
 }
 void Renderer::draw(const AppState& state, const Input& input) {
+    if (state.editorActive()) {
+        if (!editorRenderer_) editorRenderer_ = std::make_unique<EditorRenderer>(editorFontPath_);
+        editorRenderer_->draw(renderer_.get(), state.editor(), input);
+        if (state.editor().notice().active()) drawDialog(state.editor().notice(), input);
+        SDL_RenderPresent(renderer_.get());
+        return;
+    }
     constexpr SDL_Color white{235, 240, 250, 255};
     constexpr SDL_Color muted{170, 185, 205, 255};
     SDL_SetRenderDrawColor(renderer_.get(), 18, 24, 34, 255);
@@ -59,24 +67,41 @@ void Renderer::draw(const AppState& state, const Input& input) {
             text((entry.directory ? "[DIR] " : "      ") + entry.path.filename().string(), 30, y, white);
         }
         if (browser.entries().empty()) text("No entries", 24, 138, muted);
-        text(browser.message().empty() ? std::to_string(browser.entries().size()) + " entries (read-only)" :
+        text(browser.message().empty() ? std::to_string(browser.entries().size()) + " entries" :
              browser.message(), 24, 340, muted);
     } else {
         text(std::string(AppState::entries[state.selected()]), 24, 148, white);
         text(state.screen() == Screen::About ? "A gamepad-first editor for Linux handhelds." :
-             "Planned for a future milestone.", 24, 210, muted);
+             "Open a text file from File Browser.", 24, 210, muted);
         text(input.label(InputAction::Back) + ": back   " + input.label(InputAction::Menu) + ": menu", 24, 260, muted);
     }
     text(input.label(InputAction::Up) + "/" + input.label(InputAction::Down) + ": move   " + input.label(InputAction::Confirm) + ": confirm", 24, 382, white);
     text(state.screen() == Screen::FileBrowser ? "Select .. to open parent directory" :
          input.label(InputAction::Back) + ": back   " + input.label(InputAction::Menu) + ": menu", 24, 414, white);
     text(input.label(InputAction::PageUp) + "/" + input.label(InputAction::PageDown) + ": page   " + input.label(InputAction::Details) + ": path", 24, 446, muted);
-    if (state.dialog().active()) {
+    if (state.fileActionActive()) {
+        SDL_SetRenderDrawColor(renderer_.get(), 28, 40, 58, 255);
+        SDL_Rect panel{70, 112, 500, 242}; SDL_RenderFillRect(renderer_.get(), &panel);
+        text("Open text file", 90, 124, white);
+        const char* choices[]{"View", "Edit", "Cancel"};
+        for (std::size_t i = 0; i < 3; ++i) {
+            const int y = 174 + static_cast<int>(i) * 52;
+            if (state.fileActionSelected() == i) {
+                SDL_SetRenderDrawColor(renderer_.get(), 38, 86, 135, 255);
+                SDL_Rect selected{84, y - 4, 466, 44}; SDL_RenderFillRect(renderer_.get(), &selected);
+            }
+            text(choices[i], 102, y, white);
+        }
+    }
+    if (state.dialog().active()) drawDialog(state.dialog(), input);
+    SDL_RenderPresent(renderer_.get());
+}
+void Renderer::drawDialog(const TextDialog& dialog, const Input& input) {
+    constexpr SDL_Color white{235, 240, 250, 255}, muted{170, 185, 205, 255};
         SDL_Rect panel{0, 0, 426, 480};
         SDL_SetRenderDrawColor(renderer_.get(), 28, 40, 58, 255);
         SDL_RenderFillRect(renderer_.get(), &panel);
         SDL_RenderSetClipRect(renderer_.get(), &panel);
-        const auto& dialog = state.dialog();
         text(dialog.title(), 20, 16, white);
         for (std::size_t i = dialog.first(); i < dialog.lines().size() && i < dialog.first() + TextDialog::visibleRows; ++i) {
             if (!dialog.lines()[i].empty())
@@ -87,7 +112,6 @@ void Renderer::draw(const AppState& state, const Input& input) {
         text(input.label(InputAction::PageUp) + "/" + input.label(InputAction::PageDown) + ": page", 20, 422, muted);
         text(input.label(InputAction::Back) + ": close", 20, 450, muted);
         SDL_RenderSetClipRect(renderer_.get(), nullptr);
-    }
-    SDL_RenderPresent(renderer_.get());
 }
+
 }

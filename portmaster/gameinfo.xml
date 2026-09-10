@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<gameList>
+  <game>
+    <path>./PortPad.sh</path>
+    <name>PortPad</name>
+    <desc>Gamepad-first text editor and file manager. View and edit UTF-8 files with a controller keyboard, search, undo and safe saving.</desc>
+    <developer>mamitsch</developer>
+    <publisher>Open Source</publisher>
+    <genre>Utility / Tool</genre>
+    <image>./portpad/screenshot.png</image>
+  </game>
+</gameList>

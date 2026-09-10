@@ -1,7 +1,32 @@
 #include "Input.hpp"
+#include "EditorState.hpp"
 #include <iostream>
 
 namespace portpad {
+std::optional<EditorCommand> Input::editorCommand(const SDL_Event& event) {
+    if (event.type != SDL_KEYDOWN) return {};
+    const auto key = event.key.keysym.sym;
+    const auto modifiers = event.key.keysym.mod;
+    if (modifiers & KMOD_CTRL) {
+        switch (key) {
+        case SDLK_z: return modifiers & KMOD_SHIFT ? EditorCommand::Redo : EditorCommand::Undo;
+        case SDLK_y: return EditorCommand::Redo;
+        case SDLK_s: return modifiers & KMOD_SHIFT ? EditorCommand::SaveAs : EditorCommand::Save;
+        case SDLK_f: return EditorCommand::Find;
+        case SDLK_g: return EditorCommand::GoToLine;
+        case SDLK_RETURN: return EditorCommand::Newline;
+        case SDLK_TAB: return EditorCommand::Tab;
+        default: break;
+        }
+    }
+    if (key == SDLK_BACKSPACE) return EditorCommand::Backspace;
+    if (key == SDLK_DELETE) return EditorCommand::Delete;
+    return {};
+}
+bool Input::printableKey(const SDL_Event& event) {
+    return event.type == SDL_KEYDOWN && event.key.keysym.sym >= 32 && event.key.keysym.sym <= 0x10ffff &&
+        !(event.key.keysym.mod & (KMOD_CTRL | KMOD_ALT));
+}
 std::string Input::label(InputAction action) const {
     const SDL_Keycode keys[]{SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_RETURN, SDLK_ESCAPE, SDLK_TAB, SDLK_PAGEUP, SDLK_PAGEDOWN, SDLK_p};
     const SDL_GameControllerButton buttons[]{SDL_CONTROLLER_BUTTON_DPAD_UP, SDL_CONTROLLER_BUTTON_DPAD_DOWN,

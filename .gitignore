@@ -46,7 +46,7 @@ Thumbs.db
 
 # Temporary PortMaster build output
 dist/
-package/
+/package/
 
 # CMake user-specific presets
 CMakeUserPresets.json

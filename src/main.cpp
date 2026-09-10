@@ -33,11 +33,20 @@ int main(int argc, char** argv) {
         portpad::AppState state;
         portpad::Input input(configPath);
         portpad::Renderer renderer(fontPath);
+        SDL_StopTextInput();
+        bool textInput = false;
         while (state.running()) {
             SDL_Event event;
             while (SDL_PollEvent(&event)) {
+                const auto action = input.handle(event); // Also maintains controller hotplug state.
                 if (event.type == SDL_QUIT) state.requestQuit();
-                else if (const auto action = input.handle(event)) state.handle(*action);
+                else if (state.editorActive() && portpad::Input::editorCommand(event)) state.editorCommand(*portpad::Input::editorCommand(event));
+                else if (event.type == SDL_TEXTINPUT && state.textEntry()) state.insertText(event.text.text);
+                else if (!(state.textEntry() && portpad::Input::printableKey(event)) && action) state.handle(*action);
+            }
+            if (textInput != state.textEntry()) {
+                textInput = state.textEntry();
+                if (textInput) SDL_StartTextInput(); else SDL_StopTextInput();
             }
             renderer.draw(state, input);
             if (smokeTest) {

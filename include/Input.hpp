@@ -6,6 +6,7 @@
 #include <string>
 
 namespace portpad {
+enum class EditorCommand;
 class Input {
 public:
     explicit Input(const std::string& configPath = {});
@@ -13,6 +14,8 @@ public:
     Input(const Input&) = delete;
     Input& operator=(const Input&) = delete;
     std::optional<InputAction> handle(const SDL_Event& event);
+    static std::optional<EditorCommand> editorCommand(const SDL_Event& event);
+    static bool printableKey(const SDL_Event& event);
     std::string controllerName() const;
     std::string label(InputAction action) const;
 private:

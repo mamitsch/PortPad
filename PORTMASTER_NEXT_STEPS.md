@@ -1,3 +1,15 @@
+> **Historical plan — superseded; do not use as current build instructions.**
+> Reviewed 2026-09-11. The implemented workflow is documented in [BUILD.md](BUILD.md).
+> Current output is `dist/portpad.zip`, generated from
+> `dist/portmaster-source/port/portpad/` via an external official checkout's
+> `ports/portpad/` and release tools. No SDL/system libraries are bundled.
+> Submitted launchers use 0644; binaries use 0755 with runtime execute-bit repair.
+> `collect-portmaster-libs.sh`, `portmaster/package/` and `dist/staging/` were
+> proposed here but are not implemented or required. The concise port README
+> contains no build instructions. Packaging needs a checkout argument or
+> `PORTMASTER_REPO`. The editor milestone was implemented after this plan.
+> The original text below is preserved for historical rationale only.
+
 # PortPad — Codex Implementation Plan for ARM64 / PortMaster Packaging
 
 ## Context

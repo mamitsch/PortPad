@@ -1,0 +1,24 @@
+{
+  "version": 4,
+  "name": "portpad.zip",
+  "items": ["PortPad.sh", "portpad"],
+  "items_opt": [],
+  "attr": {
+    "title": "PortPad",
+    "porter": ["mamitsch"],
+    "desc": "Gamepad-first text editor and file manager for PortMaster-compatible handhelds. Browse and view UTF-8 files, edit with a controller keyboard, search, undo and save with backups.",
+    "desc_md": null,
+    "inst": "Includes application and font. Uses firmware SDL2 and SDL2_ttf; no runtime downloads. Experimental aarch64 editor; installation and browser validated on R36S.",
+    "inst_md": null,
+    "genres": ["other"],
+    "image": null,
+    "rtr": true,
+    "exp": true,
+    "runtime": [],
+    "store": [],
+    "availability": "full",
+    "reqs": [],
+    "arch": ["aarch64"],
+    "min_glibc": "2.17"
+  }
+}

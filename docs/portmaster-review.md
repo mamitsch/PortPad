@@ -1,4 +1,27 @@
+# PortMaster review history
+
+Current status, 2026-09-11: official ARM64 build/staging/export/packaging and six
+CTest suites now exist. The editor, virtual keyboard and guarded View/Edit workflow
+are implemented. The user reported R36S installation, launch, browser, controller
+mappings and cleanup working; the new editor and exact firmware/version matrix
+still need hardware testing. See [CURRENT_STATE.md](CURRENT_STATE.md) and
+[BUILD.md](../BUILD.md) for maintained guidance and dated command results.
+
+Everything below records the **2026-09-09 pre-editor review**, including its old
+follow-up note. “Current”, “pending”, missing scaffolding and four-suite counts
+refer to that date, not today's implementation. Library bundling proposals below
+are superseded by the current no-bundled-shared-libraries policy.
+
+---
+
 # PortMaster readiness review — 2026-09-09
+
+Packaging follow-up: PortPad now exports a source layout for the official
+PortMaster-New release builder. No shared libraries are bundled; firmware must
+supply SDL2/SDL2_ttf, GLIBC_2.17 and GLIBCXX_3.4.26. A labeled development screenshot
+is generated from the real renderer. See [BUILDING.md](../BUILDING.md).
+Real-device installation and runtime validation remain pending.
+The original review below records the state before that packaging work.
 
 Verdict: the current prototype has a suitable foundation, but is not yet a
 validated PortMaster release. No handheld build or hardware execution was performed.
